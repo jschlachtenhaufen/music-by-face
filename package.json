@@ -1,11 +1,10 @@
 {
-    "name": "SA3",
+    "name": "Music by Face",
     "version": "1.0.0",
-    "description": "SA3 for CS52",
+    "description": "Project for Dali Lab App",
     "main": "src/index.js",
-    "repository": "git@github.com:dartmouth-cs52-19S/starterpack-jschlachtenhaufen.git",
+    "repository": "https://github.com/jschlachtenhaufen/music-by-face",
     "author": "John Schlachtenhaufen <jschlach25@gmail.com>",
-    "license": "MIT",
     "scripts": {
         "start": "NODE_ENV=development webpack-dev-server",
         "test": "eslint src/**.js",
@@ -43,15 +42,14 @@
     },
     "dependencies": {
         "axios": "^0.18.0",
+        "form-data": "^2.3.3",
         "jquery": "^3.4.0",
-        "lodash.debounce": "^4.0.8",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
+        "react-dropzone": "^10.1.4",
         "react-redux": "^7.0.2",
         "react-router": "^5.0.0",
         "react-router-dom": "^5.0.0",
-        "react-spotify-player": "^1.0.4",
-        "redux": "^4.0.1",
-        "redux-thunk": "^2.3.0"
+        "react-spotify-player": "^1.0.4"
     }
 }
