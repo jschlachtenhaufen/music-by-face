@@ -1,5 +1,5 @@
 {
-    "name": "Music by Face",
+    "name": "music-by-face",
     "version": "1.0.0",
     "description": "Project for Dali Lab App",
     "main": "src/index.js",
