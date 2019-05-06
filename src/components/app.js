@@ -1,53 +1,22 @@
 import React from 'react';
-import {
-    BrowserRouter as Router, Route, NavLink, Switch,
-} from 'react-router-dom';
-import Counter from '../containers/counter';
-import Controls from '../containers/control';
-
-
-const About = (props) => {
-    return <Controls />;
-};
-
-const Welcome = (props) => {
-    return <Counter />;
-};
-
-const Nav = (props) => {
-    return (
-        <nav>
-            <ul>
-                <li><NavLink to="/">Home</NavLink></li>
-                <li><NavLink to="/about">About</NavLink></li>
-                <li><NavLink to="/test/id1">test id1</NavLink></li>
-                <li><NavLink to="/test/id2">test id2</NavLink></li>
-            </ul>
-        </nav>
-    );
-};
-
-const Test = (props) => {
-    return <div> ID: {props.match.params.id} </div>;
-};
-
-const FallBack = (props) => {
-    return <div>URL Not Found</div>;
-};
+import SpotifyPlayer from 'react-spotify-player';
 
 const App = (props) => {
+    const size = {
+        width: '100%',
+        height: 300,
+    };
+    const view = 'list'; // or 'coverart'
+    const theme = 'black'; // or 'white'
     return (
-        <Router>
-            <div>
-                <Nav />
-                <Switch>
-                    <Route exact path="/" component={Welcome} />
-                    <Route path="/about" component={About} />
-                    <Route exact path="/test/:id" component={Test} />
-                    <Route component={FallBack} />
-                </Switch>
-            </div>
-        </Router>
+        <div>
+            <SpotifyPlayer
+                uri="spotify:album:1TIUsv8qmYLpBEhvmBmyBk"
+                size={size}
+                view={view}
+                theme={theme}
+            />
+        </div>
     );
 };
 
