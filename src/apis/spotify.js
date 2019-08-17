@@ -1,29 +1,27 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.spotify.com/v1/recommendations';
-const AUTH_TOKEN = '';
-axios.defaults.headers.common = { Authorization: `Bearer ${AUTH_TOKEN}` };
+const API_URL = 'http://127.0.0.1:9090';
 
 const spotify = {
-    findSongs: (genre, energy, acousticness, danceability, valence, mode) => {
+    getGenres: () => {
         return new Promise((resolve, reject) => {
-            const params = {
-                seed_genres: genre,
-                target_energy: energy,
-                target_acousticness: acousticness,
-                target_danceability: danceability,
-                targer_valence: valence,
-                limit: 1,
-                mode,
-            };
-
-            axios.get(API_URL, { params })
+            axios.get(`${API_URL}/spotify/genres`)
                 .then((response) => {
-                    resolve(response.data.tracks);
+                    resolve(response.data);
                 })
                 .catch((error) => {
                     reject(error);
                 });
+        });
+    },
+
+    findSong: (params) => {
+        return new Promise((resolve, reject) => {
+            axios.get(`${API_URL}/spotify/recommendation`, { params }).then((track) => {
+                resolve(track);
+            }).catch((error) => {
+                reject(error);
+            });
         });
     },
 };
