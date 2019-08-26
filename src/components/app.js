@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import * as _ from 'lodash';
 import SpotifyPlayer from 'react-spotify-player';
+import BeatLoader from 'react-spinners/BounceLoader';
+import Select from 'react-select';
+import Button from '@material-ui/core/Button';
 import spotify from '../apis/spotify';
 import skyBiometry from '../apis/skyBiometry';
 import convertAttributesToMood from '../util';
 import ImageUploader from './imageUploader';
+import ParticleBackground from './particleBackground';
 
 class App extends Component {
     constructor(props) {
@@ -12,9 +16,11 @@ class App extends Component {
 
         this.state = {
             genres: [],
-            currentSongUri: 'spotify:album:1TIUsv8qmYLpBEhvmBmyBk',
             selectedPhoto: null,
-            selectedGenre: 'acoustic',
+            selectedGenre: null,
+            currentSongUri: '',
+            loading: false,
+
         };
 
         this.SKY_IMG_SIZE_LIMIT = 2; // 2 mb limit on images
@@ -28,21 +34,9 @@ class App extends Component {
         });
     }
 
-    handleClick = () => {
-        if (!this.state.selectedPhoto) return;
-        skyBiometry.detectFaces(this.state.selectedPhoto).then((photos) => {
-            const attributes = photos[0].tags.map(tag => tag.attributes);
-            const mood = convertAttributesToMood(attributes);
-            mood.seed_genres = this.state.selectedGenre;
-            mood.limit = 1;
-            console.log(attributes);
-            console.log(mood);
-            spotify.findSong(mood).then((res) => {
-                const song = res.data[0];
-                this.setState({
-                    currentSongUri: song.uri,
-                });
-            });
+    handleGenreChange = (selectedGenre) => {
+        this.setState({
+            selectedGenre,
         });
     }
 
@@ -52,37 +46,82 @@ class App extends Component {
         });
     }
 
-    handleGenreChange = (event) => {
-        this.setState({
-            selectedGenre: event.target.value,
+    handleClick = () => {
+        this.toggleLoading(true);
+        skyBiometry.detectFaces(this.state.selectedPhoto).then((photos) => {
+            const attributes = photos[0].tags.map(tag => tag.attributes);
+            const mood = convertAttributesToMood(attributes);
+            mood.seed_genres = this.state.selectedGenre.value;
+            mood.limit = 1;
+            spotify.findSong(mood).then((res) => {
+                const song = res.data[0];
+                this.setState({
+                    loading: false,
+                    currentSongUri: song.uri,
+                });
+                window.scrollTo(0, document.body.scrollHeight);
+            });
         });
     }
 
-    render() {
-        const size = {
-            width: '100%',
-            height: 300,
-        };
+    toggleLoading = (loading) => {
+        this.setState({ loading });
+    }
 
+    render() {
         const genres = _.map(this.state.genres, (genre) => {
-            return <option key={genre} value={genre}>{genre}</option>;
+            return { value: genre, label: genre };
         });
-        const view = 'list'; // or 'coverart'
-        const theme = 'black'; // or 'white'
+
+        const canFindSong = this.state.selectedGenre && this.state.selectedPhoto;
+
         return (
             <div>
-                <select onChange={this.handleGenreChange} value={this.state.selectedGenre}>
-                    {genres}
-                </select>
-                <ImageUploader selectPhoto={this.selectPhoto} maxFileSize={this.SKY_IMG_SIZE_LIMIT} />
-                <img id="uploadedImage" src="#" alt="" />
-                <button type="button" onClick={this.handleClick}>Test</button>
-                <SpotifyPlayer
-                    uri={this.state.currentSongUri}
-                    size={size}
-                    view={view}
-                    theme={theme}
-                />
+                <ParticleBackground />
+                <h1>Music by Face</h1>
+                <div id="content">
+                    <p>
+                    Choose a seed genre, upload a photo, then get a song recommededation based on the mood in the image. Uses SkyBiometry and Spotify&apos;s APIs.
+                    </p>
+                    <Select
+                        onChange={this.handleGenreChange}
+                        value={this.state.selectedGenre}
+                        options={genres}
+                        placeholder="Select seed genre..."
+                        id="genre-selector"
+                    />
+                    <ImageUploader
+                        selectPhoto={this.selectPhoto}
+                        maxFileSize={this.SKY_IMG_SIZE_LIMIT}
+                        toggleLoading={this.toggleLoading}
+                    />
+                    {canFindSong && (
+                        <Button
+                            id="find-song-button"
+                            type="submit"
+                            variant="outlined"
+                            onClick={this.handleClick}
+                        >
+                        Find a Song
+                        </Button>
+                    )}
+                </div>
+
+                {this.state.currentSongUri && (
+                    <SpotifyPlayer
+                        uri={this.state.currentSongUri}
+                        view="coverart"
+                        theme="white"
+                    />
+                )}
+                <div id="loading-indicator">
+                    <BeatLoader
+                        sizeUnit="px"
+                        size={150}
+                        color="#0EBFE9"
+                        loading={this.state.loading}
+                    />
+                </div>
             </div>
         );
     }

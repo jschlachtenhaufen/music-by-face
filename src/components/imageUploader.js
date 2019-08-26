@@ -1,38 +1,51 @@
-import React, { Component } from 'react';
+import React from 'react';
 import imageCompression from 'browser-image-compression';
+import Button from '@material-ui/core/Button';
 
-class ImageUploader extends Component {
-    handleChange = (event) => {
+const ImageUploader = (props) => {
+    const handleFileSubmission = (event) => {
         const file = event.target.files && event.target.files[0];
         if (!file) return;
 
+        props.toggleLoading(true);
         const reader = new FileReader();
         reader.onload = (e) => {
-            document.getElementById('uploadedImage').src = e.target.result;
+            const imageEl = document.getElementById('uploaded-image');
+            imageEl.src = e.target.result;
+            imageEl.style.display = 'block';
         };
 
         const options = {
-            maxSizeMB: this.props.maxFileSize,
+            maxSizeMB: props.maxFileSize,
             useWebWorker: true,
         };
 
         imageCompression(file, options).then((compressedFile) => {
             reader.readAsDataURL(compressedFile);
-            this.props.selectPhoto(compressedFile);
-        }).catch((err) => {
-            console.log(err);
-            // TODO Handle
+            props.selectPhoto(compressedFile);
+            props.toggleLoading(false);
         });
-    }
+    };
 
-    render() {
-        return (
-            <div>
-                <input type="file" multiple={false} accept="image/*" onChange={this.handleChange} />
-                <img id="uploadedImage" src="#" alt="" />
-            </div>
-        );
-    }
-}
+    /* eslint-disable jsx-a11y/label-has-for */
+    /* eslint-disable jsx-a11y/label-has-associated-control */
+    return (
+        <div id="image-uploader">
+            <input
+                accept="image/*"
+                id="file-input"
+                multiple={false}
+                type="file"
+                onChange={handleFileSubmission}
+            />
+            <label htmlFor="file-input">
+                <Button variant="contained" component="span">
+                    Upload Photo
+                </Button>
+            </label>
+            <img id="uploaded-image" src="#" alt="" />
+        </div>
+    );
+};
 
 export default ImageUploader;
