@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:9090';
+const API_URL = 'https://music-by-face.herokuapp.com';
 
 const spotify = {
     getGenres: () => {
