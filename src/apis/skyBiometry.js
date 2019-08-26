@@ -2,7 +2,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 
 const API_URL = 'http://api.skybiometry.com/fc/faces/detect.json';
-const SKY_API_KEY = '772mtgive8q17940mhiqo6og51'; // uses domain authentication, so exposure is okay
+const SKY_API_KEY = 'e4o63ea41ft4gv4u21ta00pcpp'; // uses domain authentication, so exposure is okay
 
 const skyBiometry = {
     detectFaces: (file) => {
